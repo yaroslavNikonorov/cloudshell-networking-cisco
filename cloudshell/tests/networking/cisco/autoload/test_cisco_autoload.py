@@ -101,7 +101,7 @@ class TestCiscoAutoload(TestCase):
         self.assertFalse(len(trash_chrs) > 0)
         self.assertTrue(len(chassis) == 1)
         self.assertTrue(len(modules) == 1)
-        self.assertTrue(len(ports) == 49)
+        self.assertTrue(len(ports) == 48)
         self.assertTrue(len(sub_modules) == 0)
         self.assertTrue(self._check_relative_path(result.resources))
         print len(chassis)
@@ -190,8 +190,8 @@ class TestCiscoAutoload(TestCase):
                 print char.relative_address + ': ' + char.attribute_name + ' = ' + char.attribute_value
         self.assertFalse(len(trash_chrs) > 0)
         self.assertTrue(len(chassis) == 1)
-        self.assertTrue(len(modules) == 3)
-        self.assertTrue(len(ports) == 18)
+        self.assertTrue(len(modules) == 2)
+        self.assertTrue(len(ports) == 16)
         self.assertTrue(len(sub_modules) == 0)
         self.assertTrue(self._check_relative_path(result.resources))
         print len(chassis)
@@ -623,6 +623,126 @@ class TestCiscoAutoload(TestCase):
         self.assertTrue(len(ports) == 0)
         self.assertTrue(len(sub_modules) == 0)
         self.assertTrue(self._check_relative_path(result.resources))
+        print len(chassis)
+        print len(ports)
+        print len(modules)
+        print len(sub_modules)
+
+    def test_is_loads_2951_correctly(self):
+        print '-----------2951------------'
+        ip = '172.29.168.37'
+        logger = get_qs_logger(log_file_prefix=ip)
+        snmp = QualiSnmp(ip=ip, snmp_community='public', logger=logger)
+        handler = CiscoGenericSNMPAutoload(logger=logger, snmp_handler=snmp, supported_os=self.SUPPORTED_OS)
+        result = handler.discover()
+        self.assertIsNotNone(result)
+        self.assertIsNotNone(result.resources)
+        self.assertIsNotNone(result.attributes)
+        chassis = [resource for resource in result.resources if 'Chassis' in resource.name]
+        modules = [resource for resource in result.resources if resource.model == 'Generic Module']
+        ports = [resource for resource in result.resources if resource.model == 'Generic Port']
+        sub_modules = [resource for resource in result.resources if 'Sub Module' in resource.name]
+        trash_chrs = [attribute for attribute in result.attributes if type(attribute.attribute_value) is str and
+                      '\\s' in attribute.attribute_value]
+        if len(trash_chrs) > 0:
+            for char in trash_chrs:
+                print char.relative_address + ': ' + char.attribute_name + ' = ' + char.attribute_value
+        self.assertTrue(self._check_relative_path(result.resources))
+        self.assertFalse(len(trash_chrs) > 0)
+        self.assertTrue(len(chassis) == 1)
+        self.assertTrue(len(modules) == 1)
+        self.assertTrue(len(ports) == 5)
+        self.assertTrue(len(sub_modules) == 2)
+        print len(chassis)
+        print len(ports)
+        print len(modules)
+        print len(sub_modules)
+
+    def test_is_loads_3945_correctly(self):
+        print '-----------3945------------'
+        ip = '172.29.168.38'
+        logger = get_qs_logger(log_file_prefix=ip)
+        snmp = QualiSnmp(ip=ip, snmp_community='public', logger=logger)
+        handler = CiscoGenericSNMPAutoload(logger=logger, snmp_handler=snmp, supported_os=self.SUPPORTED_OS)
+        result = handler.discover()
+        self.assertIsNotNone(result)
+        self.assertIsNotNone(result.resources)
+        self.assertIsNotNone(result.attributes)
+        chassis = [resource for resource in result.resources if 'Chassis' in resource.name]
+        modules = [resource for resource in result.resources if resource.model == 'Generic Module']
+        ports = [resource for resource in result.resources if resource.model == 'Generic Port']
+        sub_modules = [resource for resource in result.resources if 'Sub Module' in resource.name]
+        trash_chrs = [attribute for attribute in result.attributes if type(attribute.attribute_value) is str and
+                      '\\s' in attribute.attribute_value]
+        if len(trash_chrs) > 0:
+            for char in trash_chrs:
+                print char.relative_address + ': ' + char.attribute_name + ' = ' + char.attribute_value
+        self.assertTrue(self._check_relative_path(result.resources))
+        self.assertFalse(len(trash_chrs) > 0)
+        self.assertTrue(len(chassis) == 1)
+        self.assertTrue(len(modules) == 1)
+        self.assertTrue(len(ports) == 6)
+        self.assertTrue(len(sub_modules) == 1)
+        print len(chassis)
+        print len(ports)
+        print len(modules)
+        print len(sub_modules)
+
+    def test_is_loads_isr_4451_correctly(self):
+        print '-----------isr_4451------------'
+        ip = '172.29.168.39'
+        logger = get_qs_logger(log_file_prefix=ip)
+        snmp = QualiSnmp(ip=ip, snmp_community='public', logger=logger)
+        handler = CiscoGenericSNMPAutoload(logger=logger, snmp_handler=snmp, supported_os=self.SUPPORTED_OS)
+        result = handler.discover()
+        self.assertIsNotNone(result)
+        self.assertIsNotNone(result.resources)
+        self.assertIsNotNone(result.attributes)
+        chassis = [resource for resource in result.resources if 'Chassis' in resource.name]
+        modules = [resource for resource in result.resources if resource.model == 'Generic Module']
+        ports = [resource for resource in result.resources if resource.model == 'Generic Port']
+        sub_modules = [resource for resource in result.resources if 'Sub Module' in resource.name]
+        trash_chrs = [attribute for attribute in result.attributes if type(attribute.attribute_value) is str and
+                      '\\s' in attribute.attribute_value]
+        if len(trash_chrs) > 0:
+            for char in trash_chrs:
+                print char.relative_address + ': ' + char.attribute_name + ' = ' + char.attribute_value
+        self.assertTrue(self._check_relative_path(result.resources))
+        self.assertFalse(len(trash_chrs) > 0)
+        self.assertTrue(len(chassis) == 1)
+        self.assertTrue(len(modules) == 1)
+        self.assertTrue(len(ports) == 4)
+        self.assertTrue(len(sub_modules) == 1)
+        print len(chassis)
+        print len(ports)
+        print len(modules)
+        print len(sub_modules)
+
+    def test_is_loads_asr_1004_correctly(self):
+        print '-----------asr_1004------------'
+        ip = '172.29.168.40'
+        logger = get_qs_logger(log_file_prefix=ip)
+        snmp = QualiSnmp(ip=ip, snmp_community='public', logger=logger)
+        handler = CiscoGenericSNMPAutoload(logger=logger, snmp_handler=snmp, supported_os=self.SUPPORTED_OS)
+        result = handler.discover()
+        self.assertIsNotNone(result)
+        self.assertIsNotNone(result.resources)
+        self.assertIsNotNone(result.attributes)
+        chassis = [resource for resource in result.resources if 'Chassis' in resource.name]
+        modules = [resource for resource in result.resources if resource.model == 'Generic Module']
+        ports = [resource for resource in result.resources if resource.model == 'Generic Port']
+        sub_modules = [resource for resource in result.resources if 'Sub Module' in resource.name]
+        trash_chrs = [attribute for attribute in result.attributes if type(attribute.attribute_value) is str and
+                      '\\s' in attribute.attribute_value]
+        if len(trash_chrs) > 0:
+            for char in trash_chrs:
+                print char.relative_address + ': ' + char.attribute_name + ' = ' + char.attribute_value
+        self.assertTrue(self._check_relative_path(result.resources))
+        self.assertFalse(len(trash_chrs) > 0)
+        self.assertTrue(len(chassis) == 1)
+        self.assertTrue(len(modules) == 2)
+        self.assertTrue(len(ports) == 6)
+        self.assertTrue(len(sub_modules) == 2)
         print len(chassis)
         print len(ports)
         print len(modules)
