@@ -1,3 +1,5 @@
+from cloudshell.configuration.cloudshell_shell_core_binding_keys import LOGGER
+from cloudshell.configuration.cloudshell_snmp_binding_keys import SNMP_HANDLER
 import re
 import os
 
@@ -43,20 +45,16 @@ class CiscoGenericSNMPAutoload(AutoloadOperationsInterface):
 
     @property
     def logger(self):
-        if self._logger is None:
-            try:
-                self._logger = inject.instance('logger')
-            except:
-                raise Exception('CiscoAutoload', 'Failed to get logger.')
-        return self._logger
+        if self._logger:
+            logger = self._logger
+        else:
+            logger = inject.instance(LOGGER)
+        return logger
 
     @property
     def snmp(self):
-        if self._snmp is None:
-            try:
-                self._snmp = inject.instance('snmp_handler')
-            except:
-                raise Exception('CiscoAutoload', 'Failed to get snmp handler.')
+        if not self._snmp:
+            self._snmp = inject.instance(SNMP_HANDLER)
         return self._snmp
 
     def load_cisco_mib(self):
@@ -481,7 +479,9 @@ class CiscoGenericSNMPAutoload(AutoloadOperationsInterface):
 
         result = ''
         for key, value in self.port_channel_ports.iteritems():
-            if str(item_id) in value['dot3adAggPortAttachedAggID']:
+            if str(item_id) in value['dot3adAggPortAttachedAggID'] \
+                    and key in self.if_table \
+                    and self.IF_ENTITY in self.if_table[key]:
                 result += self.if_table[key][self.IF_ENTITY].replace('/', '-').replace(' ', '') + '; '
         return result.strip(' \t\n\r')
 
@@ -551,7 +551,6 @@ class CiscoGenericSNMPAutoload(AutoloadOperationsInterface):
 
             if parent_id not in raw_entity_table or parent_id in self.exclusion_list:
                 self.exclusion_list.append(element)
-
 
     def _get_ip_interface_details(self, port_index):
         """Get IP address details for provided port
