@@ -20,8 +20,8 @@ class CiscoSaveFlow(SaveConfigurationFlow):
 
         with self._cli_handler.get_cli_service(self._cli_handler.enable_mode) as enable_session:
             save_action = SystemActions(enable_session, self._logger)
-            action_map = save_action.prepare_action_map(configuration_type, folder_path)
+            action_map = save_action.prepare_action_map(folder_path)
             save_action.copy(configuration_type,
-                             folder_path,
+                             folder_path.remote_path,
                              vrf=vrf_management_name,
                              action_map=action_map)

@@ -27,37 +27,32 @@ class SystemActions(object):
         self._logger = logger
 
     @staticmethod
-    def prepare_action_map(source_file, destination_file):
+    def prepare_action_map(path):
         action_map = OrderedDict()
-        if "://" in destination_file:
-            url = UrlParser.parse_url(destination_file)
-            dst_file_name = url.get(UrlParser.FILENAME)
-            source_file_name = UrlParser.parse_url(source_file).get(UrlParser.FILENAME)
-            action_map[r"[\[\(].*{}[\)\]]".format(
-                dst_file_name)] = lambda session, logger: session.send_line("", logger)
+        # if "://" in destination_file:
+        #     url = UrlParser.parse_url(destination_file)
+        #     dst_file_name = url.get(UrlParser.FILENAME)
+        #     source_file_name = UrlParser.parse_url(source_file).get(UrlParser.FILENAME)
+        #     action_map[r"[\[\(].*{}[\)\]]".format(
+        #         dst_file_name)] = lambda session, logger: session.send_line("", logger)
+        #
+        #     action_map[r"[\[\(]{}[\)\]]".format(source_file_name)] = lambda session, logger: session.send_line("",
+        #                                                                                                        logger)
+        # else:
+        #     destination_file_name = UrlParser.parse_url(destination_file).get(UrlParser.FILENAME)
+        #     url = UrlParser.parse_url(source_file)
 
-            action_map[r"[\[\(]{}[\)\]]".format(source_file_name)] = lambda session, logger: session.send_line("",
-                                                                                                               logger)
-        else:
-            destination_file_name = UrlParser.parse_url(destination_file).get(UrlParser.FILENAME)
-            url = UrlParser.parse_url(source_file)
-
-            source_file_name = url.get(UrlParser.FILENAME)
-            action_map[r"(?!/)[\[\(]{}[\)\]]".format(
-                destination_file_name)] = lambda session, logger: session.send_line("", logger)
-            action_map[r"(?!/)[\[\(]{}[\)\]]".format(
-                source_file_name)] = lambda session, logger: session.send_line("", logger)
-        host = url.get(UrlParser.HOSTNAME)
-        password = url.get(UrlParser.PASSWORD)
-        username = url.get(UrlParser.USERNAME)
-        if username:
-            action_map[r"[Uu]ser(name)?:".format(
-                source_file)] = lambda session, logger: session.send_line(username, logger)
-        if password:
-            action_map[r"[Pp]assword:".format(
-                source_file)] = lambda session, logger: session.send_line(password, logger)
-        if host:
-            action_map[r"(?!/){}(?!/)".format(host)] = lambda session, logger: session.send_line("", logger)
+        #     source_file_name = url.get(UrlParser.FILENAME)
+        action_map[r"(?!/)[\[\(].*{}[\)\]]".format(
+            path.filename)] = lambda session, logger: session.send_line("", logger)
+        action_map[r"(?!/)[\[\(]{}[\)\]]".format(
+            path.config_type)] = lambda session, logger: session.send_line("", logger)
+        if path.username:
+            action_map[r"[Uu]ser(name)?[:?]*"] = lambda session, logger: session.send_line(path.username, logger)
+        if path.password:
+            action_map[r"[Pp]assword:"] = lambda session, logger: session.send_line(path.password, logger)
+        if path.host:
+            action_map[r"(?!/){}(?!/)".format(path.host)] = lambda session, logger: session.send_line("", logger)
 
         return action_map
 

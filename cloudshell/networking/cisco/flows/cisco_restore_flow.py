@@ -29,7 +29,8 @@ class CiscoRestoreFlow(RestoreConfigurationFlow):
 
         with self._cli_handler.get_cli_service(self._cli_handler.enable_mode) as enable_session:
             restore_action = SystemActions(enable_session, self._logger)
-            copy_action_map = restore_action.prepare_action_map(path, configuration_type)
+            copy_action_map = restore_action.prepare_action_map(path)
+            remote_path = path.remote_path
 
             if "startup" in configuration_type:
                 if restore_method == "override":
@@ -37,21 +38,21 @@ class CiscoRestoreFlow(RestoreConfigurationFlow):
                         "[Dd]elete [Ff]ilename ": lambda session, logger: session.send_line(self.STARTUP_CONFIG_NAME,
                                                                                             logger)})
                     restore_action.delete_file(path=self.STARTUP_LOCATION, action_map=del_action_map)
-                    restore_action.copy(path,
+                    restore_action.copy(remote_path,
                                         configuration_type,
                                         vrf=vrf_management_name,
                                         action_map=copy_action_map)
                 else:
-                    restore_action.copy(path,
+                    restore_action.copy(remote_path,
                                         configuration_type,
                                         vrf=vrf_management_name,
                                         action_map=copy_action_map)
 
             elif "running" in configuration_type:
                 if restore_method == "override":
-                    restore_action.override_running(path)
+                    restore_action.override_running(remote_path)
                 else:
-                    restore_action.copy(path,
+                    restore_action.copy(remote_path,
                                         configuration_type,
                                         vrf=vrf_management_name,
                                         action_map=copy_action_map)
